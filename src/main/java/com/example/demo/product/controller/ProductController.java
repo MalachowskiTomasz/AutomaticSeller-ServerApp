@@ -71,9 +71,7 @@ public class ProductController {
 	public ResponseEntity<String> updatePriceOfProduct(@RequestParam long articleId,
 											   @RequestParam float price) {
 		val p = productRepository.findByArticleId(articleId);
-		if (p == null) {
-			return ResponseEntity.notFound().build();
-		}
+		if (p == null) return ResponseEntity.notFound().build();
 		p.setPrice(price);
 		productRepository.save(p);
 		return ResponseEntity.ok("Price of product has been modified");
