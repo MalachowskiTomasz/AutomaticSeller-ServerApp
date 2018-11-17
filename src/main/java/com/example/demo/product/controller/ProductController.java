@@ -35,7 +35,7 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "/add", method = POST)
-	public ResponseEntity addProduct(@RequestParam long articleId,
+	public ResponseEntity<String> addProduct(@RequestParam long articleId,
 									 @RequestParam String name,
 									 @RequestParam String description,
 									 @RequestParam float price,
@@ -46,7 +46,7 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "/delete", method = DELETE)
-	public ResponseEntity deleteProduct(@RequestParam long articleId) {
+	public ResponseEntity<String> deleteProduct(@RequestParam long articleId) {
 		val p = productRepository.findByArticleId(articleId);
 		if (p == null) {
 			return ResponseEntity.notFound().build();
@@ -56,7 +56,7 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "updateQuantity", method = PATCH)
-	public ResponseEntity updateQuantityOfProduct(@RequestParam long articleId,
+	public ResponseEntity<String> updateQuantityOfProduct(@RequestParam long articleId,
 												  @RequestParam long quantity) {
 		val p = productRepository.findByArticleId(articleId);
 		if (p == null) {
@@ -68,7 +68,7 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "updatePrice", method = PATCH)
-	public ResponseEntity updatePriceOfProduct(@RequestParam long articleId,
+	public ResponseEntity<String> updatePriceOfProduct(@RequestParam long articleId,
 											   @RequestParam float price) {
 		val p = productRepository.findByArticleId(articleId);
 		if (p == null) {

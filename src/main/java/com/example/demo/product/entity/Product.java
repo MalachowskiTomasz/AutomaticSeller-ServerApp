@@ -14,7 +14,7 @@ import javax.persistence.Id;
 public class Product {
 
 	@Id
-	private Long articleId;
+	private long articleId;
 
 	private String name;
 	private String description;
