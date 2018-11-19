@@ -34,7 +34,7 @@ public class UserController {
 								  @RequestParam String firstName,
 								  @RequestParam String lastName) {
 		User u = new User(documentId, firstName, lastName, email, password);
-
+		u.setValidated(true);
 		if (!userRepository.findById(documentId).isPresent()) {
 			userRepository.save(u);
 			return ResponseEntity.ok().build();
@@ -48,11 +48,13 @@ public class UserController {
 	}
 
 	@RequestMapping(value = "/authenticate", method = GET)
-	public ResponseEntity<String> authenticateUser(@RequestParam String email,
+	public ResponseEntity<Object> authenticateUser(@RequestParam String email,
 										   @RequestParam String password) {
 		User user = userRepository.findUserByEmailAndPassword(email, password);
-		if (user != null)
-			return ResponseEntity.ok(String.valueOf(user.getEntranceID()));
+		if (user != null) {
+			user.generateEntranceID();
+			return ResponseEntity.ok(user);
+		}
 		else
 			return ResponseEntity.status(NOT_FOUND_STATUS).body("User doesn't exist or Invalid login or password");
 	}
@@ -60,7 +62,7 @@ public class UserController {
 	@RequestMapping(value = "/validate", method = GET)
 	public ResponseEntity validateUser(@RequestParam String documentId) {
 		val user = userRepository.findUserByDocumentId(documentId);
-		if (user == null) return ResponseEntity.status(420).body("User not found");
+		if (user == null) return ResponseEntity.status(NOT_FOUND_STATUS).body("User not found");
 		user.setValidated(true);
 		return ResponseEntity.ok("User has been validated");
 	}
