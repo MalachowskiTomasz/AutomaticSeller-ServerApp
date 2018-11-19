@@ -20,6 +20,7 @@ public class UserController {
 
 	private static final int NOT_FOUND_STATUS = 420;
 	private static final int DUPLICATED_USER_STATUS = 293;
+	private static final int USER_NOT_VALIDATED = 452;
 	private final UserRepository userRepository;
 
 	@Autowired
@@ -52,8 +53,11 @@ public class UserController {
 										   @RequestParam String password) {
 		User user = userRepository.findUserByEmailAndPassword(email, password);
 		if (user != null) {
-			user.generateEntranceID();
-			return ResponseEntity.ok(user);
+			if (user.isValidated()) {
+				user.generateEntranceID();
+				return ResponseEntity.ok(user);
+			} else
+				return ResponseEntity.status(USER_NOT_VALIDATED).body("User hasn't been validated");
 		}
 		else
 			return ResponseEntity.status(NOT_FOUND_STATUS).body("User doesn't exist or Invalid login or password");
