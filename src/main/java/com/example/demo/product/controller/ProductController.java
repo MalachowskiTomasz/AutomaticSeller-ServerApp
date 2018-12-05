@@ -39,8 +39,8 @@ public class ProductController {
 									 @RequestParam String name,
 									 @RequestParam String description,
 									 @RequestParam float price,
-									 @RequestParam(defaultValue = "1") long quantity) {
-		val p = new Product(articleId, name, description, price, quantity);
+									 @RequestParam(defaultValue = "1") long storageQuantity) {
+		val p = new Product(articleId, name, description, price, storageQuantity);
 		productRepository.save(p);
 		return ResponseEntity.ok().body("Product has been added");
 	}
@@ -56,13 +56,13 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "updateQuantity", method = PATCH)
-	public ResponseEntity<String> updateQuantityOfProduct(@RequestParam long articleId,
-												  @RequestParam long quantity) {
+	public ResponseEntity<String> updateQuantityOfProductInStorage(@RequestParam long articleId,
+																   @RequestParam long storageQuantity) {
 		val p = productRepository.findByArticleId(articleId);
 		if (p == null) {
 			return ResponseEntity.notFound().build();
 		}
-		p.setQuantity(quantity);
+		p.setQuantity(storageQuantity);
 		productRepository.save(p);
 		return ResponseEntity.ok("Quantity of product has been modified");
 	}
