@@ -36,10 +36,10 @@ public class ProductController {
 
 	@RequestMapping(value = "/add", method = POST)
 	public ResponseEntity<String> addProduct(@RequestParam long articleId,
-									 @RequestParam String name,
-									 @RequestParam String description,
-									 @RequestParam float price,
-									 @RequestParam(defaultValue = "1") long storageQuantity) {
+											 @RequestParam String name,
+											 @RequestParam String description,
+											 @RequestParam float price,
+											 @RequestParam(defaultValue = "1") long storageQuantity) {
 		val p = new Product(articleId, name, description, price, storageQuantity);
 		productRepository.save(p);
 		return ResponseEntity.ok().body("Product has been added");
@@ -62,6 +62,7 @@ public class ProductController {
 		if (p == null) {
 			return ResponseEntity.notFound().build();
 		}
+
 		p.setQuantity(storageQuantity);
 		productRepository.save(p);
 		return ResponseEntity.ok("Quantity of product has been modified");
@@ -69,9 +70,11 @@ public class ProductController {
 
 	@RequestMapping(value = "updatePrice", method = PATCH)
 	public ResponseEntity<String> updatePriceOfProduct(@RequestParam long articleId,
-											   @RequestParam float price) {
+													   @RequestParam float price) {
 		val p = productRepository.findByArticleId(articleId);
-		if (p == null) return ResponseEntity.notFound().build();
+		if (p == null)
+			return ResponseEntity.notFound().build();
+
 		p.setPrice(price);
 		productRepository.save(p);
 		return ResponseEntity.ok("Price of product has been modified");

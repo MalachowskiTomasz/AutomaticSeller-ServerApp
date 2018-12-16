@@ -1,7 +1,7 @@
 package com.example.demo.user.controller;
 
 import com.example.demo.user.entity.User;
-import com.example.demo.user.repository.UserRepository;
+import com.example.demo.user.services.UserService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -20,54 +21,46 @@ public class UserController {
 
 	private static final int NOT_FOUND_STATUS = 420;
 	private static final int DUPLICATED_USER_STATUS = 293;
-	private static final int USER_NOT_VALIDATED = 452;
-	private final UserRepository userRepository;
+
+	private final UserService userService;
 
 	@Autowired
-	public UserController(UserRepository userRepository) {
-		this.userRepository = userRepository;
+	public UserController(UserService userService) {
+		this.userService = userService;
 	}
 
 	@RequestMapping(value = "/add", method = POST)
 	public ResponseEntity<String> addUser(@RequestParam String documentId,
-			@RequestParam String email,
-								  @RequestParam String password,
-								  @RequestParam String firstName,
-								  @RequestParam String lastName) {
-		User u = new User(documentId, firstName, lastName, email, password);
-		u.setValidated(true);
-		if (!userRepository.findById(documentId).isPresent()) {
-			userRepository.save(u);
-			return ResponseEntity.ok().build();
-		}
-		return ResponseEntity.status(DUPLICATED_USER_STATUS).body("User already exist in database");
+										  @RequestParam String email,
+										  @RequestParam String password,
+										  @RequestParam String firstName,
+										  @RequestParam String lastName) {
+		val u = new User(documentId, firstName, lastName, email, password);
+		return userService.addUser(u) ?
+				ResponseEntity.ok().build() :
+				ResponseEntity.status(DUPLICATED_USER_STATUS)
+						.body("User already exist in database");
 	}
 
-	@RequestMapping(value = "/findAll", method = GET)
-	public List<User> findAllUsers() {
-		return userRepository.findAll();
+	@RequestMapping(value = "/getAll", method = GET)
+	public List<User> getAllUsers() {
+		return userService.getAllUsers();
 	}
 
-	@RequestMapping(value = "/authenticate", method = GET)
+	@RequestMapping(value = "/authenticate", method = POST)
 	public ResponseEntity<Object> authenticateUser(@RequestParam String email,
-										   @RequestParam String password) {
-		User user = userRepository.findUserByEmailAndPassword(email, password);
-		if (user != null) {
-			if (user.isValidated()) {
-				user.generateEntranceID();
-				return ResponseEntity.ok(user);
-			} else
-				return ResponseEntity.status(USER_NOT_VALIDATED).body("User hasn't been validated");
-		}
-		else
-			return ResponseEntity.status(NOT_FOUND_STATUS).body("User doesn't exist or Invalid login or password");
+												   @RequestParam String password) {
+		Optional<User> u = userService.authenticate(email, password);
+		return u.isPresent() ?
+				ResponseEntity.ok(u.get()) :
+				ResponseEntity.status(NOT_FOUND_STATUS)
+						.body("User doesn't exist, login or password is invalid or user is not validated");
 	}
 
 	@RequestMapping(value = "/validate", method = GET)
 	public ResponseEntity validateUser(@RequestParam String documentId) {
-		val user = userRepository.findUserByDocumentId(documentId);
-		if (user == null) return ResponseEntity.status(NOT_FOUND_STATUS).body("User not found");
-		user.setValidated(true);
-		return ResponseEntity.ok("User has been validated");
+		return userService.validate(documentId) ?
+				ResponseEntity.ok("User has been validated") :
+				ResponseEntity.status(NOT_FOUND_STATUS).body("User not found");
 	}
 }
