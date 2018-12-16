@@ -33,9 +33,12 @@ public class UserController {
 	public ResponseEntity<String> addUser(@RequestParam String documentId,
 										  @RequestParam String email,
 										  @RequestParam String password,
-										  @RequestParam String firstName,
-										  @RequestParam String lastName) {
-		val u = new User(documentId, firstName, lastName, email, password);
+										  @RequestParam(required = false) String firstName,
+										  @RequestParam(required = false) String lastName) {
+		val u = new User.UserBuilder(documentId, email, password)
+				.withFirstName(firstName)
+				.withLastName(lastName)
+				.build();
 		return userService.addUser(u) ?
 				ResponseEntity.ok().build() :
 				ResponseEntity.status(DUPLICATED_USER_STATUS)

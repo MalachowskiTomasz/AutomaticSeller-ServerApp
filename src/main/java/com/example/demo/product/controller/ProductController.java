@@ -37,10 +37,13 @@ public class ProductController {
 	@RequestMapping(value = "/add", method = POST)
 	public ResponseEntity<String> addProduct(@RequestParam long articleId,
 											 @RequestParam String name,
-											 @RequestParam String description,
+											 @RequestParam(required = false) String description,
 											 @RequestParam float price,
 											 @RequestParam(defaultValue = "1") long storageQuantity) {
-		val p = new Product(articleId, name, description, price, storageQuantity);
+		val p = new Product.ProductBuilder(articleId, name, price)
+				.withDescription(description)
+				.withQuantity(storageQuantity)
+				.build();
 		productRepository.save(p);
 		return ResponseEntity.ok().body("Product has been added");
 	}

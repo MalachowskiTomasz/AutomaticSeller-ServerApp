@@ -39,8 +39,9 @@ public class User {
 
 	}
 
-	public User(String documentId, String firstName, String lastName, String email, String password) {
+	private User(String documentId, String firstName, String lastName, String email, String password, boolean validated) {
 		this.documentId = documentId;
+		this.validated = validated;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -50,5 +51,39 @@ public class User {
 	public void generateEntranceID() {
 		if (entranceId == null)
 			entranceId = Objects.hash(documentId, firstName, lastName, email, password);
+	}
+
+	public static class UserBuilder {
+		private String documentId;
+		private boolean validated;
+		private String firstName;
+		private String lastName;
+		private String email;
+		private String password;
+
+		public UserBuilder(String documentId, String email, String password) {
+			this.documentId = documentId;
+			this.email = email;
+			this.password = password;
+		}
+
+		public UserBuilder withFirstName(String firstName) {
+			this.firstName = firstName;
+			return this;
+		}
+
+		public UserBuilder withLastName(String lastName) {
+			this.lastName = lastName;
+			return this;
+		}
+
+		public UserBuilder isValidated(boolean validated) {
+			this.validated = validated;
+			return this;
+		}
+
+		public User build() {
+			return new User(documentId, firstName, lastName, email, password, validated);
+		}
 	}
 }
