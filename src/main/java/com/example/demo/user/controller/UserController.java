@@ -47,7 +47,7 @@ public class UserController {
 		return userService.getAllUsers();
 	}
 
-	@RequestMapping(value = "/authenticate", method = POST)
+	@RequestMapping(value = "/authenticate", method = GET)
 	public ResponseEntity<Object> authenticateUser(@RequestParam String email,
 												   @RequestParam String password) {
 		Optional<User> u = userService.authenticate(email, password);
