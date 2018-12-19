@@ -29,6 +29,17 @@ public class UserController {
 		this.userService = userService;
 	}
 
+	/**
+	 * Adds user to database
+	 *
+	 * @param documentId User's serial number of identity card
+	 * @param email      User e-mail
+	 * @param password   User password
+	 * @param firstName  First name
+	 * @param lastName   Last name
+	 * @return If user doesn't already exist in database information "User has been added". Otherwise "User already
+	 * exists in database"
+	 */
 	@RequestMapping(value = "/add", method = POST)
 	public ResponseEntity<String> addUser(@RequestParam String documentId,
 										  @RequestParam String email,
@@ -40,16 +51,29 @@ public class UserController {
 				.withLastName(lastName)
 				.build();
 		return userService.addUser(u) ?
-				ResponseEntity.ok().build() :
+				ResponseEntity.ok("User has been added") :
 				ResponseEntity.status(DUPLICATED_USER_STATUS)
-						.body("User already exist in database");
+						.body("User already exists in database");
 	}
 
+	/**
+	 * Displays all users in database
+	 *
+	 * @return List of users in database in JSON format
+	 */
 	@RequestMapping(value = "/getAll", method = GET)
 	public List<User> getAllUsers() {
 		return userService.getAllUsers();
 	}
 
+	/**
+	 * Authenticates users
+	 *
+	 * @param email    User e-mail
+	 * @param password User password
+	 * @return If user exists in database and e-mail and password are correct - all information about the user in
+	 * JSON format. Otherwise information "User doesn't exist, login or password is invalid or user is not validated"
+	 */
 	@RequestMapping(value = "/authenticate", method = GET)
 	public ResponseEntity<Object> authenticateUser(@RequestParam String email,
 												   @RequestParam String password) {
@@ -60,6 +84,12 @@ public class UserController {
 						.body("User doesn't exist, login or password is invalid or user is not validated");
 	}
 
+	/**
+	 * Makes user account validated
+	 *
+	 * @param documentId User's serial number of identity document
+	 * @return If user exists in database information "User has been validated". Otherwise "User not found"
+	 */
 	@RequestMapping(value = "/validate", method = GET)
 	public ResponseEntity validateUser(@RequestParam String documentId) {
 		return userService.validate(documentId) ?
