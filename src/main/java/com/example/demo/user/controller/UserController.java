@@ -19,9 +19,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping("/user")
 public class UserController {
 
-	private static final int NOT_FOUND_STATUS = 420;
-	private static final int DUPLICATED_USER_STATUS = 293;
-
 	private final UserService userService;
 
 	@Autowired
@@ -52,8 +49,7 @@ public class UserController {
 				.build();
 		return userService.addUser(u) ?
 				ResponseEntity.ok("User has been added") :
-				ResponseEntity.status(DUPLICATED_USER_STATUS)
-						.body("User already exists in database");
+				ResponseEntity.ok("User already exists in database");
 	}
 
 	/**
@@ -80,8 +76,7 @@ public class UserController {
 		Optional<User> u = userService.authenticate(email, password);
 		return u.isPresent() ?
 				ResponseEntity.ok(u.get()) :
-				ResponseEntity.status(NOT_FOUND_STATUS)
-						.body("User doesn't exist, login or password is invalid or user is not validated");
+				ResponseEntity.ok("User doesn't exist, login or password is invalid or user is not validated");
 	}
 
 	/**
@@ -94,6 +89,6 @@ public class UserController {
 	public ResponseEntity validateUser(@RequestParam String documentId) {
 		return userService.validate(documentId) ?
 				ResponseEntity.ok("User has been validated") :
-				ResponseEntity.status(NOT_FOUND_STATUS).body("User not found");
+				ResponseEntity.ok("User has not been found");
 	}
 }

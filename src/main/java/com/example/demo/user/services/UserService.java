@@ -49,6 +49,7 @@ public class UserService {
 			return false;
 
 		u.get().setValidated(true);
+		userRepository.save(u.get());
 		return true;
 	}
 

@@ -39,13 +39,15 @@ public class User {
 
 	}
 
-	private User(String documentId, String firstName, String lastName, String email, String password, boolean validated) {
+	private User(String documentId, String firstName, String lastName, String email, String password,
+				 boolean validated, Integer entranceId) {
 		this.documentId = documentId;
 		this.validated = validated;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.password = password;
+		this.entranceId = entranceId;
 	}
 
 	public void generateEntranceID() {
@@ -60,6 +62,7 @@ public class User {
 		private String lastName;
 		private String email;
 		private String password;
+		private Integer entranceId;
 
 		public UserBuilder(String documentId, String email, String password) {
 			this.documentId = documentId;
@@ -77,13 +80,18 @@ public class User {
 			return this;
 		}
 
+		public UserBuilder withEntranceId(Integer entranceId) {
+			this.entranceId = entranceId;
+			return this;
+		}
+
 		public UserBuilder isValidated(boolean validated) {
 			this.validated = validated;
 			return this;
 		}
 
 		public User build() {
-			return new User(documentId, firstName, lastName, email, password, validated);
+			return new User(documentId, firstName, lastName, email, password, validated, entranceId);
 		}
 	}
 }
