@@ -1,7 +1,7 @@
-package com.example.demo.user.controller;
+package com.company.automaticseller.server.user.controller;
 
-import com.example.demo.user.entity.User;
-import com.example.demo.user.services.UserService;
+import com.company.automaticseller.server.user.entity.User;
+import com.company.automaticseller.server.user.services.UserService;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

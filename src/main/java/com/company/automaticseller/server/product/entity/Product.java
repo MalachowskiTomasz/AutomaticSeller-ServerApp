@@ -1,4 +1,4 @@
-package com.example.demo.product.entity;
+package com.company.automaticseller.server.product.entity;
 
 import lombok.Data;
 

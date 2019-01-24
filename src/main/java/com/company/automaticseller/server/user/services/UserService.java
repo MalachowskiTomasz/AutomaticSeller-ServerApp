@@ -1,7 +1,7 @@
-package com.example.demo.user.services;
+package com.company.automaticseller.server.user.services;
 
-import com.example.demo.user.entity.User;
-import com.example.demo.user.repository.UserRepository;
+import com.company.automaticseller.server.user.entity.User;
+import com.company.automaticseller.server.user.repository.UserRepository;
 import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

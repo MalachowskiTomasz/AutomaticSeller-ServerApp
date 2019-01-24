@@ -1,8 +1,9 @@
-package com.example.demo.user.services;
+package com.company.automaticseller.server.user.services;
 
-import com.example.demo.user.entity.User;
-import com.example.demo.user.repository.UserRepository;
+import com.company.automaticseller.server.user.entity.User;
+import com.company.automaticseller.server.user.repository.UserRepository;
 import lombok.val;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,7 +65,7 @@ public class UserServiceTest {
 
 		val result = userService.getAllUsers();
 
-		assertThat(result).containsAll(users);
+		Assertions.assertThat(result).containsAll(users);
 	}
 
 	@Test
@@ -78,10 +79,10 @@ public class UserServiceTest {
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		assertThat(result).isPresent();
+		Assertions.assertThat(result).isPresent();
 		val user = result.get();
-		assertThat(user).isEqualTo(u);
-		assertThat(user.getEntranceId()).isEqualTo(1234);
+		Assertions.assertThat(user).isEqualTo(u);
+		Assertions.assertThat(user.getEntranceId()).isEqualTo(1234);
 	}
 
 	@Test
@@ -96,9 +97,9 @@ public class UserServiceTest {
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		assertThat(result).isPresent();
+		Assertions.assertThat(result).isPresent();
 		val user = result.get();
-		assertThat(user).isEqualTo(u);
+		Assertions.assertThat(user).isEqualTo(u);
 		assertThat(captor.getValue()).isEqualTo(u);
 	}
 
@@ -112,7 +113,7 @@ public class UserServiceTest {
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		assertThat(result).isNotPresent();
+		Assertions.assertThat(result).isNotPresent();
 	}
 
 	@Test
@@ -122,7 +123,7 @@ public class UserServiceTest {
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		assertThat(result).isNotPresent();
+		Assertions.assertThat(result).isNotPresent();
 	}
 
 	@Test
