@@ -46,10 +46,11 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void shouldNotAddUserIfFoundSomeoneWithSameDocumentId() {
-		val u = new User.UserBuilder(userDocumentId, userEmail, userPassword).build();
-		when(userRepository.findUserByDocumentId(anyString())).thenReturn(u);
+	public void shouldNotAddUser_ifUserWithSameDocumentIdExistsInDatabase() {
+		val databaseUser = new User.UserBuilder(userDocumentId, "user@company.com", "password").build();
+		when(userRepository.findUserByDocumentId(anyString())).thenReturn(databaseUser);
 
+		val u = new User.UserBuilder(userDocumentId, userEmail, userPassword).build();
 		val result = userService.addUser(u);
 
 		assertThat(result).isFalse();
@@ -65,11 +66,11 @@ public class UserServiceTest {
 
 		val result = userService.getAllUsers();
 
-		Assertions.assertThat(result).containsAll(users);
+		assertThat(result).containsAll(users);
 	}
 
 	@Test
-	public void shouldCorrectlyRetrieveUserWhenExistsInDatabaseIsValidatedAndHasEntranceId() {
+	public void shouldAuthenticateUser_whenExistsInDatabaseIsValidatedAndHasEntranceId() {
 		val u = new User.UserBuilder(userDocumentId, userEmail, userPassword)
 				.isValidated(true)
 				.withEntranceId(1234).build();
@@ -79,14 +80,14 @@ public class UserServiceTest {
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		Assertions.assertThat(result).isPresent();
+		assertThat(result).isPresent();
 		val user = result.get();
-		Assertions.assertThat(user).isEqualTo(u);
-		Assertions.assertThat(user.getEntranceId()).isEqualTo(1234);
+		assertThat(user).isEqualTo(u);
+		assertThat(user.getEntranceId()).isEqualTo(1234);
 	}
 
 	@Test
-	public void shouldCorrectlyRetrieveUserWhenExistsInDatabaseIsValidatedAndHasNoEntranceId() {
+	public void shouldAuthenticateUserAndGenerateEntranceId_whenExistsInDatabaseIsValidatedAndHasNoEntranceId() {
 		val captor = ArgumentCaptor.forClass(User.class);
 		val u = new User.UserBuilder(userDocumentId, userEmail, userPassword)
 				.isValidated(true)
@@ -97,15 +98,15 @@ public class UserServiceTest {
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		Assertions.assertThat(result).isPresent();
+		assertThat(result).isPresent();
 		val user = result.get();
-		Assertions.assertThat(user).isEqualTo(u);
-		assertThat(captor.getValue()).isEqualTo(u);
+		assertThat(user).isEqualTo(u);
+		assertThat(user.getEntranceId()).isNotNull();
 	}
 
 
 	@Test
-	public void shouldReturnEmptyWhenUserIsNotValidated() {
+	public void shouldNotAuthenticateUser_ifIsNotValidated() {
 		val u = new User.UserBuilder(userDocumentId, userEmail, userPassword)
 				.isValidated(false).build();
 		when(userRepository.findUserByEmailAndPassword(userEmail, userPassword))
@@ -113,25 +114,23 @@ public class UserServiceTest {
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		Assertions.assertThat(result).isNotPresent();
+		assertThat(result).isNotPresent();
 	}
 
 	@Test
-	public void shouldReturnEmptyWhenUserDoesntExistInDatabase() {
+	public void shouldNotAuthenticateUser_ifDoesntExistInDatabase() {
 		when(userRepository.findUserByEmailAndPassword(userEmail, userPassword))
 				.thenReturn(null);
 
 		val result = userService.authenticate(userEmail, userPassword);
 
-		Assertions.assertThat(result).isNotPresent();
+		assertThat(result).isNotPresent();
 	}
 
 	@Test
-	public void shouldSetUserStatusToValidatedIfExistsInDatabase() {
+	public void shouldValidateUser_ifExistsInDatabase() {
 		val captor = ArgumentCaptor.forClass(User.class);
 		val u = new User.UserBuilder(userDocumentId, userEmail, userPassword)
-				.withFirstName("Someone")
-				.withLastName("Anyone")
 				.isValidated(false).build();
 		when(userRepository.findUserByDocumentId(userDocumentId)).thenReturn(u);
 		doReturn(null).when(userRepository).save(captor.capture());
@@ -145,7 +144,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void shouldNotSetStatusToValidatedIfUserDoesNotExistInDatabase() {
+	public void shouldNotValidateUser_ifDoesNotExistInDatabase() {
 		when(userRepository.findUserByDocumentId(anyString())).thenReturn(null);
 
 		val result = userService.validate(userDocumentId);

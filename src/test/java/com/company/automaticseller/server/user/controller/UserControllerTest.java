@@ -37,7 +37,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void shouldAddUserToDatabaseIfNotFoundInDatabase() {
+	public void shouldAddUserToDatabase() {
 		when(userService.addUser(any(User.class))).thenReturn(true);
 
 		val result = userController.addUser(userDocumentId, userEmail, userPassword, userFirstName, userLastName);
@@ -47,7 +47,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void shouldNotAddUserToDatabaseIfAlreadyExists() {
+	public void shouldNotAddUserToDatabase_ifAlreadyExistsInDatabase() {
 		when(userService.addUser(any(User.class))).thenReturn(false);
 
 		val result = userController.addUser(userDocumentId, userEmail, userPassword, userFirstName, userLastName);
@@ -57,7 +57,7 @@ public class UserControllerTest {
 	}
 
 	@Test
-	public void shouldCorrectlyRetrieveAllUsersFromDatabase() {
+	public void shouldRetrieveAllUsersFromDatabase() {
 		val userList = Lists.newArrayList(
 				new User.UserBuilder(userDocumentId, userEmail, userPassword).build(),
 				new User.UserBuilder("124", "he@test.com", "hello").build()

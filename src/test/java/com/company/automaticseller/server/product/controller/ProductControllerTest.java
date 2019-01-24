@@ -21,29 +21,29 @@ public class ProductControllerTest {
 	@Mock
 	private ProductRepository productRepository;
 
-	ProductController testedObj;
+	ProductController controller;
 
 	@Before
 	public void setUp() {
-		testedObj = new ProductController(productRepository);
+		controller = new ProductController(productRepository);
 	}
 
 	@Test
-	public void shouldFindProductWithGivenArticleIdIfExistsInDatabase() {
+	public void shouldFindProduct_ifExistsInDatabase() {
 		val p = new Product.ProductBuilder(123, "SomeName", 1.12F)
 				.build();
 		when(productRepository.findByArticleId(anyLong())).thenReturn(p);
 
-		val result = testedObj.findProduct(123);
+		val result = controller.findProduct(123);
 
 		assertThat(result).isEqualTo(p);
 	}
 
 	@Test
-	public void shouldReturnNullIfCouldNotFindProductInDatabase() {
+	public void shouldReturnNull_ifCouldNotFindProductInDatabase() {
 		when(productRepository.findByArticleId(anyLong())).thenReturn(null);
 
-		val result = testedObj.findProduct(123);
+		val result = controller.findProduct(123);
 
 		assertThat(result).isEqualTo(null);
 	}
@@ -56,18 +56,18 @@ public class ProductControllerTest {
 		);
 		when(productRepository.findAll()).thenReturn(productList);
 
-		val result = testedObj.findAllProduct();
+		val result = controller.findAllProduct();
 
 		assertThat(result).hasSize(2);
 		assertThat(result).containsAll(productList);
 	}
 
 	@Test
-	public void shouldAddProductToDatabaseIfDataIsCorrect() {
+	public void shouldAddProductToDatabase() {
 		ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
 		doReturn(null).when(productRepository).save(captor.capture());
 
-		val result = testedObj.addProduct(123L, "Name", "Some", 1.39F, 1);
+		val result = controller.addProduct(123L, "Name", "Some", 1.39F, 1);
 
 		val p = captor.getValue();
 		assertThat(p.getArticleId()).isEqualTo(123L);
@@ -83,7 +83,7 @@ public class ProductControllerTest {
 		when(productRepository.findByArticleId(anyLong())).thenReturn(p);
 		doNothing().when(productRepository).delete(captor.capture());
 
-		val result = testedObj.deleteProduct(123L);
+		val result = controller.deleteProduct(123L);
 
 		assertThat(captor.getValue()).isEqualTo(p);
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -94,7 +94,7 @@ public class ProductControllerTest {
 	public void shouldNotDeleteProductIfNotFoundInDatabase() {
 		when(productRepository.findByArticleId(anyLong())).thenReturn(null);
 
-		val result = testedObj.deleteProduct(111L);
+		val result = controller.deleteProduct(111L);
 
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo("Product has not been found in database");
@@ -107,7 +107,7 @@ public class ProductControllerTest {
 		when(productRepository.findByArticleId(anyLong())).thenReturn(p);
 		doReturn(null).when(productRepository).save(captor.capture());
 
-		val result = testedObj.updatePriceOfProduct(123L, 2.5F);
+		val result = controller.updatePriceOfProduct(123L, 2.5F);
 
 		val product = captor.getValue();
 		assertThat(product).isEqualTo(product);
@@ -117,10 +117,10 @@ public class ProductControllerTest {
 	}
 
 	@Test
-	public void shouldNotUpdatePriceOfProductInDatabase() {
+	public void shouldNotUpdatePriceOfProduct_ifDoesNotExistInDatabase() {
 		when(productRepository.findByArticleId(anyLong())).thenReturn(null);
 
-		val result = testedObj.updatePriceOfProduct(111L, 1.12F);
+		val result = controller.updatePriceOfProduct(111L, 1.12F);
 
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo("Product has not been found in database");
@@ -133,20 +133,20 @@ public class ProductControllerTest {
 		when(productRepository.findByArticleId(anyLong())).thenReturn(p);
 		doReturn(null).when(productRepository).save(captor.capture());
 
-		val result = testedObj.updateQuantityOfProductInStorage(123L, 4);
+		val result = controller.updateQuantityOfProductInStorage(123L, 4);
 
 		val product = captor.getValue();
-		assertThat(product).isEqualTo(product);
+		assertThat(product).isEqualTo(p);
 		assertThat(product.getQuantity()).isEqualTo(4);
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo("Quantity of product has been modified");
 	}
 
 	@Test
-	public void shouldNotUpdateQuantityOfProductInDatabase() {
+	public void shouldNotUpdateQuantityOfProduct_ifProductDoesNotExistInDatabase() {
 		when(productRepository.findByArticleId(anyLong())).thenReturn(null);
 
-		val result = testedObj.updateQuantityOfProductInStorage(111L, 25);
+		val result = controller.updateQuantityOfProductInStorage(111L, 25);
 
 		assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(result.getBody()).isEqualTo("Product has not been found in database");
